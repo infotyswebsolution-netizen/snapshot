@@ -14,16 +14,7 @@ function validateEnv() {
 
   const missing = required.filter((key) => !process.env[key]);
   if (missing.length > 0) {
-    const isBuildPhase = process.env.NEXT_PHASE === "phase-production-build";
-    if (process.env.NODE_ENV === "production" && !isBuildPhase) {
-      throw new Error(
-        `Missing required environment variables: ${missing.join(", ")}`
-      );
-    } else {
-      console.warn(
-        `[SnapStock] Missing env vars: ${missing.join(", ")}`
-      );
-    }
+    console.warn(`[SnapStock] Missing env vars: ${missing.join(", ")}`);
   }
 }
 
