@@ -53,7 +53,6 @@ CREATE TABLE items (
   id                    UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   business_id           UUID NOT NULL REFERENCES businesses(id) ON DELETE CASCADE,
   name                  TEXT NOT NULL,
-  name_tsv              TSVECTOR GENERATED ALWAYS AS (to_tsvector('english', name)) STORED,
   category              TEXT,
   unit                  TEXT,
   current_quantity      NUMERIC(12,3) NOT NULL DEFAULT 0,
@@ -70,7 +69,7 @@ CREATE TABLE items (
   updated_at            TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX idx_items_business ON items(business_id);
-CREATE INDEX idx_items_name_tsv ON items USING GIN(name_tsv);
+CREATE INDEX idx_items_name ON items(business_id, name);
 CREATE INDEX idx_items_low_stock ON items(business_id, current_quantity)
   WHERE low_stock_threshold IS NOT NULL AND is_active = true;
 CREATE INDEX idx_items_square ON items(square_item_id) WHERE square_item_id IS NOT NULL;
@@ -97,7 +96,6 @@ CREATE TABLE scans (
   created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX idx_scans_business_date ON scans(business_id, scan_date DESC);
-CREATE INDEX idx_scans_business_month ON scans(business_id, DATE_TRUNC('month', scan_date));
 
 -- =====================================================
 -- SCAN_ITEMS
